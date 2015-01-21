@@ -2,18 +2,18 @@
 ## cached values in a side environment to store the cached results of 
 ## matrix inversions.
 
-## makeCacheMatrix() creates a wrapper around a matrix object which also
-## contains an associated pointer to a cached, inverse value of that matrix 
-## in another persistent scope which will accompany results returned by 
-## makeCacheMatrix.  The inverse pointer is not updated until 
+## makeCacheMatrix() creates a wrapper around a matrix object which has an
+## associated container to store a cached, inverse value of that matrix 
+## in another persistent scope which will accompany matrix results returned by 
+## makeCacheMatrix.  The inverse container is not populated until 
 ## computation of inversion is actually requested by a call to cacheScope.
 ## Subsequent calls to cacheScope will return the cached value until 
-## the wrapper's set function is called again, in which case the pointer 
+## the wrapper's set function is called again, in which case the container 
 ## is reset to NULL and the next call to cacheSolve will recompute the 
 ## inverse.  Since an element-by-element matrix comparison would be an 
 ## expensive means of change detection, a simple reference equality check 
-## is used instead (Thus we will assume that an API user will not update a matrix 
-## unless they intent to change it's values).
+## is used instead (So we will assume that mostly an API user will not  
+## update a matrix unless they intend to change its values).
 
 makeCacheMatrix <- function(x = matrix()) {
   inverse <- NULL
@@ -29,11 +29,11 @@ makeCacheMatrix <- function(x = matrix()) {
        getInverse = getInverse)
 }
 
-## This function is called on a matrix (and associated inverted matrix pointer) 
+## This function is called on a matrix (and associated inverted matrix container) 
 ## returned by the makeCacheMatrix method.  If the matrix inverse has not been set and 
-## stored in the pointer associated with this matrix (variable inverse), then it will 
+## stored in the container associated with this matrix (variable inverse), then it will 
 ## compute it, assign the result to variable inverse, and return its value.  
-## Otherwise it will return the cached pointer's value (variable inverse)
+## Otherwise it will return the cached container's value (variable inverse)
 
 cacheSolve <- function(x, ...) {
   inverse <- x$getInverse()  # (this will return NULL for the next line if makeCacheMatrix$set 
@@ -69,7 +69,7 @@ cacheSolve <- function(x, ...) {
 # [1,]   -2  1.5
 # [2,]    1 -0.5
 
-## This call to cacheSolve also updated the cached inverse result pointer:
+## This call to cacheSolve also updated the cached inverse result container value:
 
 # > A$getInverse()
 # [,1] [,2]
